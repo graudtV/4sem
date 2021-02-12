@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#define MAXWORD 1000
+
 int main(int argc, char *argv[])
 {
 	Reader *reader = (argc > 1)
@@ -21,15 +23,12 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	char buf[5];
+	char buf[MAXWORD];
 	int err;
 	while ((err = parser_get_word(parser, buf, sizeof buf)) == PARSER_SUCCESS)
 		hashtable_insert(htbl, buf);
 	if (err == PARSER_NOT_ENOUGH_MEMORY) {
-		fprintf(stderr, "error: too long word '%s...' Max supported word length is %zu\n", buf, sizeof buf - 1); // 1 - for '\0'
-		parser_get_word(parser, buf, sizeof buf);
-		printf("%s\n", buf);
-
+		fprintf(stderr, "error: too long word '%s...' Max supported word length is %zu\n", buf, sizeof buf - 1); // -1 - because of '\0'
 		exit(EXIT_FAILURE);
 	}
 	writer_run(writer, htbl, stdout);
