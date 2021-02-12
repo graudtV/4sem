@@ -1,3 +1,5 @@
+/* hashtable.h: Unordered multiset for C-strings implementation */
+
 #include "hashtable.h"
 #include "macro.h"
 #include <assert.h>

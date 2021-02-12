@@ -16,6 +16,7 @@ typedef struct {
 /*  HashTable memory policy:
  *  1) HashTable must be initialized with hashtable_create() or NULL and
  * destroyed with hashtable_destroy()
+ *  2) HashTable assignment causes compilation error
  *  2) insert(): inserted strs are automatically dublicated,
  * if they don't exist in hashtable yet, and automatically freed when
  * hashtable_destroy() is called */
@@ -26,8 +27,13 @@ void hashtable_destroy(HashTable *htbl);
 const HashTableEntry *hashtable_insert(HashTable *htbl, const char *str);
 size_t hashtable_size(HashTable *htbl); // number of different stored elements
 
-/*  HashTableIterator memory policy: iterators must be initialized
- * with hashtable_begin(), no deallocation needed */
+/*  HashTableIterator memory policy:
+ *  1) iterators must be initialized with hashtable_begin(), but
+ * no deallocation needed
+ *  2) iterators can be safely copied. The efficiecy between passing
+ * them by value or by pointer is debatable
+ *  3) iterators are invalidated after any hashtable modification
+ */
 
 /* HashTableIterator interface */
 HashTableIterator hashtable_begin(HashTable *htbl);
