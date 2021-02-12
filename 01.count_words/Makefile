@@ -23,7 +23,8 @@ run: bin/count-words
 	./bin/count-words
 
 bin/count-words: $(SOURCES) $(HEADERS)
+	mkdir -p bin
 	$(CC) $(SOURCES) $(EXTRA_FLAGS) $(addprefix -I ,$(INCLUDE_PATHS)) $(CFLAGS) -o $@
 
 clean:
-	rm -rf bin/count-words
+	rm -rf bin
