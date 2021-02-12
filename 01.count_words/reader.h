@@ -9,8 +9,8 @@ typedef struct Reader_ {
 } Reader;
 
 /* macros are prefered to calling methods directly  */
-#define reader_getc(reader) ((reader)->getc((Reader *) reader))
-#define reader_ungetc(reader, ch) ((reader)->ungetc((Reader *) reader, ch))
-#define reader_destroy(reader) ({ if (reader) (reader)->destroy((Reader *) reader); })
+#define reader_getc(reader) ((reader)->getc((Reader *) (reader)))
+#define reader_ungetc(reader, ch) ((reader)->ungetc((Reader *) (reader), (ch)))
+#define reader_destroy(reader) ({ if (reader) (reader)->destroy((Reader *) (reader)); })
 
 #endif // READER_H_

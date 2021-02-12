@@ -21,9 +21,8 @@ static size_t hash(const char *str)
 	return 0;//strlen(str);
 }
 
-/*  Empty hashtables are not allowed
- *  init_sz is used as number of lists. Number of elems in hashtable
- * can exceed it */
+/*  init_sz must be > 0
+ *  init_sz is used as number of lists. Number of elems in hashtable can exceed it */
 HashTable *hashtable_create(size_t init_sz)
 {
 	assert(init_sz > 0);
@@ -86,7 +85,7 @@ HashTableIterator hashtable_begin(HashTable *htbl)
 	it.side_list_pos = NULL;
 	it.nodes_left = htbl->nodes_sz;
 
-	assert(it.main_list_pos != NULL); // never NULL because empty hashtab is not allowed
+	assert(it.main_list_pos != NULL); // never NULL because htbl->nodes cannot have size == 0
 	while (*it.main_list_pos == NULL && it.nodes_left > 0) // seeking for not NULL in nodes array
 		++it.main_list_pos, --it.nodes_left;
 	if (!it.nodes_left) // hashtable is empty

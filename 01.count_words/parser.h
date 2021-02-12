@@ -19,7 +19,7 @@ typedef struct Parser_ {
 } Parser;
 
 /* macros are prefered to calling methods directly  */
-#define parser_get_word(parser, buf, bufsz) ((parser)->get_word((Parser *) parser, (buf), (bufsz)))
-#define parser_destroy(parser) free(parser)
+#define parser_get_word(parser, buf, bufsz) ((parser)->get_word((Parser *) (parser), (buf), (bufsz)))
+#define parser_destroy(parser) free((parser))
 
 #endif // PARSER_H_

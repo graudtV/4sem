@@ -2,6 +2,7 @@
 #include "reader_file.h"
 #include "parser_cidentifiers.h"
 #include "hashtable.h"
+#include "writer_max_words.h"
 #include <stdio.h>
 #include <assert.h>
 
@@ -13,28 +14,29 @@ int main(int argc, char *argv[])
 
 	Parser *parser = (Parser *) parser_cidentifiers_create(reader);
 	HashTable *htbl = hashtable_create(10);
+	Writer *writer = (Writer *) writer_max_words_create();
 
 	if (!reader)
 		perror("error");
 
 	char buf[1000];
 	int err;
-	while ((err = parser_get_word(parser, buf, sizeof buf)) == PARSER_SUCCESS) {
-		//printf("insert word: '%s'\n", buf);
+	while ((err = parser_get_word(parser, buf, sizeof buf)) == PARSER_SUCCESS)
 		hashtable_insert(htbl, buf);
-	}
 
-	printf("----\n");
-	for (HashTableIterator it = hashtable_begin(htbl);
-		!hashtable_iterator_end_reached(&it);
-		hashtable_iterator_inc(&it)) {
+	// printf("----\n");
+	// for (HashTableIterator it = hashtable_begin(htbl);
+	// 	!hashtable_iterator_end_reached(&it);
+	// 	hashtable_iterator_inc(&it)) {
 
-		const HashTableEntry *entry = hashtable_iterator_get(&it);
-		printf("%35s:  %zu\n", entry->str, entry->count);
-	}
+	// 	const HashTableEntry *entry = hashtable_iterator_get(&it);
+	// 	printf("%35s:  %zu\n", entry->str, entry->count);
+	// }
+	// printf("total words: %zu\n", hashtable_size(htbl));
 
-	printf("total words: %zu\n", hashtable_size(htbl));
+	writer_run(writer, htbl, stdout);
 
+	parser_destroy(parser);
 	reader_destroy(reader_file);
 	reader_destroy(reader_cmd);
 	return 0;
