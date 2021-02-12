@@ -14,18 +14,14 @@ typedef struct HashTable_ {
 	size_t nelems; // totally in hashtab
 } HashTable;
 
-typedef struct HashTableIterator_ {
-	HashTableNode **main_list_pos; // NULL for end iterator
-	HashTableNode *side_list_pos;
-	size_t nodes_left; // in main list. Decremented when side list fully passed
-} *HashTableIterator;
-
 static size_t hash(const char *str)
 {
 	return 0;//strlen(str);
 }
 
-/* Empty hashtables are not allowed */
+/*  Empty hashtables are not allowed
+ *  init_sz is used as number of lists. Number of elems in hashtable
+ * can exceed it */
 HashTable *hashtable_create(size_t init_sz)
 {
 	assert(init_sz > 0);
@@ -36,6 +32,7 @@ HashTable *hashtable_create(size_t init_sz)
 		return NULL;
 	}
 	htbl->nodes_sz = init_sz;
+	htbl->nelems = 0;
 	return htbl;
 }
 
@@ -73,30 +70,34 @@ const HashTableEntry *hashtable_insert(HashTable *htbl, const char *str)
 	new_node->next = NULL;
 	new_node->entry.count = 1;
 	*ptr_to_last = new_node; // connect node to the hashtable
+	++htbl->nelems;
 	return &new_node->entry;
 }
 
+size_t hashtable_size(HashTable *htbl)
+	{ return htbl->nelems; }
+
 HashTableIterator hashtable_begin(HashTable *htbl)
 {
-	ALLOC(struct HashTableIterator_, it);
-	it->main_list_pos = htbl->nodes;
-	it->side_list_pos = NULL;
-	it->nodes_left = htbl->nodes_sz;
+	HashTableIterator it;
+	it.main_list_pos = htbl->nodes;
+	it.side_list_pos = NULL;
+	it.nodes_left = htbl->nodes_sz;
 
-	assert(it->main_list_pos != NULL); // never NULL because empty hashtab is not allowed
-	while (*it->main_list_pos == NULL && it->nodes_left > 0) // seeking for not NULL in nodes array
-		++it->main_list_pos, --it->nodes_left;
-	if (!it->nodes_left) // hashtable is empty
-		it->main_list_pos = NULL;
+	assert(it.main_list_pos != NULL); // never NULL because empty hashtab is not allowed
+	while (*it.main_list_pos == NULL && it.nodes_left > 0) // seeking for not NULL in nodes array
+		++it.main_list_pos, --it.nodes_left;
+	if (!it.nodes_left) // hashtable is empty
+		it.main_list_pos = NULL;
 	else // side list found
-		it->side_list_pos = *it->main_list_pos;
+		it.side_list_pos = *it.main_list_pos;
 	return it;
 }
 
-bool hashtable_iterator_end_reached(HashTableIterator it)
+bool hashtable_iterator_end_reached(HashTableIterator *it)
 	{ return it->main_list_pos == NULL; }
 
-void hashtable_iterator_inc(HashTableIterator it)
+void hashtable_iterator_inc(HashTableIterator *it)
 {
 	assert(!hashtable_iterator_end_reached(it));
 	if ((it->side_list_pos = it->side_list_pos->next) != NULL) // elem in side list exists
@@ -112,7 +113,7 @@ void hashtable_iterator_inc(HashTableIterator it)
 	it->main_list_pos = NULL;
 }
 
-const HashTableEntry *hashtable_iterator_get(HashTableIterator it)
+const HashTableEntry *hashtable_iterator_get(HashTableIterator *it)
 {
 	assert(!hashtable_iterator_end_reached(it));
 	return &(it->side_list_pos->entry);

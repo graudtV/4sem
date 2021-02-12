@@ -20,18 +20,20 @@ int main(int argc, char *argv[])
 	char buf[1000];
 	int err;
 	while ((err = parser_get_word(parser, buf, sizeof buf)) == PARSER_SUCCESS) {
-		printf("insert word: '%s'\n", buf);
+		//printf("insert word: '%s'\n", buf);
 		hashtable_insert(htbl, buf);
 	}
 
 	printf("----\n");
 	for (HashTableIterator it = hashtable_begin(htbl);
-		!hashtable_iterator_end_reached(it);
-		hashtable_iterator_inc(it)) {
+		!hashtable_iterator_end_reached(&it);
+		hashtable_iterator_inc(&it)) {
 
-		const HashTableEntry *entry = hashtable_iterator_get(it);
+		const HashTableEntry *entry = hashtable_iterator_get(&it);
 		printf("%35s:  %zu\n", entry->str, entry->count);
 	}
+
+	printf("total words: %zu\n", hashtable_size(htbl));
 
 	reader_destroy(reader_file);
 	reader_destroy(reader_cmd);
