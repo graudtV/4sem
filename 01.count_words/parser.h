@@ -8,7 +8,7 @@
 typedef enum {
 	PARSER_SUCCESS = 0,
 	PARSER_EOF = EOF,
-	PARSER_NOT_ENOUGH_MEMORY
+	PARSER_NOT_ENOUGH_MEMORY = 1
 } ParserResult;
 
 /* Interface for converting bytes from reader to words */

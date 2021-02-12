@@ -46,6 +46,11 @@ void reader_cmd_destroy(ReaderCmd *reader)
 
 int reader_cmd_getc(ReaderCmd *reader)
 {
+	int c;
+	if ((c = reader->ungetc_buf) != EOF) { // check if there is smth in buffer
+		reader->ungetc_buf = EOF;
+		return c;
+	}
 	if (!reader->current_pos)
 		return EOF;
 	if (!*reader->current_pos) { // end of argument reached

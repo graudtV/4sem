@@ -4,40 +4,39 @@
 #include "hashtable.h"
 #include "writer_max_words.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
 
 int main(int argc, char *argv[])
 {
-	Reader *reader_file = (Reader *) reader_file_create("main.c");
-	Reader *reader_cmd = (Reader *) reader_cmd_create(argc - 1, argv + 1);
-	Reader *reader = reader_file;
-
+	Reader *reader = (argc > 1)
+		? (Reader *) reader_cmd_create(argc - 1, argv + 1)
+		: (Reader *) reader_file_create2(stdin);
 	Parser *parser = (Parser *) parser_cidentifiers_create(reader);
-	HashTable *htbl = hashtable_create(10);
+	HashTable *htbl = hashtable_create(100);
 	Writer *writer = (Writer *) writer_max_words_create();
 
-	if (!reader)
+	if (!reader || !parser || !htbl || !writer) {
 		perror("error");
+		exit(EXIT_FAILURE);
+	}
 
-	char buf[1000];
+	char buf[5];
 	int err;
 	while ((err = parser_get_word(parser, buf, sizeof buf)) == PARSER_SUCCESS)
 		hashtable_insert(htbl, buf);
+	if (err == PARSER_NOT_ENOUGH_MEMORY) {
+		fprintf(stderr, "error: too long word '%s...' Max supported word length is %zu\n", buf, sizeof buf - 1); // 1 - for '\0'
+		parser_get_word(parser, buf, sizeof buf);
+		printf("%s\n", buf);
 
-	// printf("----\n");
-	// for (HashTableIterator it = hashtable_begin(htbl);
-	// 	!hashtable_iterator_end_reached(&it);
-	// 	hashtable_iterator_inc(&it)) {
-
-	// 	const HashTableEntry *entry = hashtable_iterator_get(&it);
-	// 	printf("%35s:  %zu\n", entry->str, entry->count);
-	// }
-	// printf("total words: %zu\n", hashtable_size(htbl));
-
+		exit(EXIT_FAILURE);
+	}
 	writer_run(writer, htbl, stdout);
 
+	writer_destroy(writer);
+	hashtable_destroy(htbl);
 	parser_destroy(parser);
-	reader_destroy(reader_file);
-	reader_destroy(reader_cmd);
-	return 0;
+	reader_destroy(reader);
+	return EXIT_SUCCESS;
 }

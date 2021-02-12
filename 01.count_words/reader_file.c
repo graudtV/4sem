@@ -20,10 +20,15 @@ ReaderFile *reader_file_create(const char *filename)
 {
 	assert(filename);
 	FILE *input_file;
-
-	ALLOC(ReaderFile, reader);
 	if ((input_file = fopen(filename, "r")) == NULL)
 		return NULL;
+	return reader_file_create2(input_file);
+}
+
+ReaderFile *reader_file_create2(FILE *input_file)
+{
+	assert(input_file);
+	ALLOC(ReaderFile, reader);
 	reader->getc = reader_file_getc_by_base_ptr;
 	reader->ungetc = reader_file_ungetc_by_base_ptr;
 	reader->destroy = reader_file_destroy_by_base_ptr;
