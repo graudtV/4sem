@@ -1,6 +1,8 @@
 #ifndef CLI_VIEW_H_
 #define CLI_VIEW_H_
 
+namespace game {
+
 class View {
 public:
 	View() {}
@@ -8,5 +10,7 @@ public:
 
 	virtual void draw() = 0;
 };
+
+} // game namespace end
 
 #endif // VIEW_H_
