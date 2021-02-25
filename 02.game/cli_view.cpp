@@ -65,6 +65,10 @@ void CLIView::draw_main_screen()
 	int x = std::max((screen_width - static_cast<int>(snake_logo[0].size())) / 2, 1);
 	int y = std::max((screen_height - static_cast<int>(snake_logo.size())) / 2, 1);
 	draw_picture(snake_logo, y, x);
+
+	const char prompt[] = "Press ENTER to continue...";
+	x = std::max((screen_width - static_cast<int>(sizeof prompt)) / 2 + 1, 1);
+	std::cout << console::setpos(screen_height - 2, x) << prompt;
 }
 
 void CLIView::draw_screen_frame()
