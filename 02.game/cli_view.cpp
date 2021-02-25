@@ -13,6 +13,9 @@ namespace game {
 
 int CLIView::screen_width = 0;
 int CLIView::screen_height = 0;
+bool CLIView::screen_should_close = false;
+
+void catch_sigint(int unused) { CLIView::process_sigint(); }
 
 namespace {
 
@@ -33,18 +36,13 @@ const std::vector<std::string> snake_logo = {
 CLIView::CLIView()
 {
 	signal(SIGWINCH, catch_winch);
+	signal(SIGINT, catch_sigint);
 	fetch_screen_size();
-	draw_main_screen();
 }
 
 CLIView::~CLIView()
 {
-	std::cout << console::Color::eDefault << console::cls << console::home;
-}
-
-void CLIView::draw()
-{
-
+	draw_empty_screen();
 }
 
 void CLIView::fetch_screen_size()
@@ -57,11 +55,11 @@ void CLIView::fetch_screen_size()
 	screen_height = w.ws_row;
 }
 
-void CLIView::draw_main_screen()
+void CLIView::draw_greeting_screen()
 {
 	draw_screen_frame();
-	std::cout << console::Color::eBlue << console::BackgroundColor::eCyan;
 
+	std::cout << console::Color::eBlue << console::BackgroundColor::eCyan;
 	int x = std::max((screen_width - static_cast<int>(snake_logo[0].size())) / 2, 1);
 	int y = std::max((screen_height - static_cast<int>(snake_logo.size())) / 2, 1);
 	draw_picture(snake_logo, y, x);
@@ -69,6 +67,12 @@ void CLIView::draw_main_screen()
 	const char prompt[] = "Press ENTER to continue...";
 	x = std::max((screen_width - static_cast<int>(sizeof prompt)) / 2 + 1, 1);
 	std::cout << console::setpos(screen_height - 2, x) << prompt;
+	std::cout.flush();
+}
+
+void CLIView::draw_empty_screen()
+{
+	std::cout << console::Color::eDefault << console::cls << console::home;
 }
 
 void CLIView::draw_screen_frame()

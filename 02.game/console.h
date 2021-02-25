@@ -18,7 +18,7 @@ struct ColorPair {
 	ColorPair(Color fg = Color::eCurrent, BackgroundColor bg = BackgroundColor::eCurrent) :
 		foreground(fg), background(bg) {}
 	ColorPair(BackgroundColor bg) :
-		background(bg) {}
+		foreground(Color::eCurrent), background(bg) {}
 };
 
 std::ostream& operator <<(std::ostream& os, Color c);
