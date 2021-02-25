@@ -1,5 +1,6 @@
 #include <iostream>
 #include "cli_view.h"
+#include "gui_view.h"
 
 // using namespace console;
 // using namespace game;

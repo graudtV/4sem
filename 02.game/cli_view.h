@@ -1,5 +1,5 @@
-#ifndef CLI_H_
-#define CLI_H_
+#ifndef CLI_VIEW_H_
+#define CLI_VIEW_H_
 
 #include "view.h"
 #include "console.h"
@@ -35,4 +35,4 @@ private:
 
 } // game namespace end
 
-#endif // CLI_H_
+#endif // CLI_VIEW_H_
