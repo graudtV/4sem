@@ -1,4 +1,5 @@
 #include "cli_view.h"
+#include "snake_game.h"
 #include <cstdio>
 #include <cstdlib>
 #include <sys/ioctl.h>
@@ -38,11 +39,13 @@ CLIView::CLIView()
 	signal(SIGWINCH, catch_winch);
 	signal(SIGINT, catch_sigint);
 	fetch_screen_size();
+	std::cout << console::show_cursor(false);
 }
 
 CLIView::~CLIView()
 {
 	draw_empty_screen();
+	std::cout << console::show_cursor(true);
 }
 
 void CLIView::fetch_screen_size()
@@ -55,11 +58,17 @@ void CLIView::fetch_screen_size()
 	screen_height = w.ws_row;
 }
 
+void CLIView::draw_empty_screen()
+{
+	std::cout << console::Color::eDefault << console::cls << console::home;
+	std::cout.flush();
+}
+
 void CLIView::draw_greeting_screen()
 {
-	draw_screen_frame();
+	draw_game_screen();
 
-	std::cout << console::Color::eBlue << console::BackgroundColor::eCyan;
+	std::cout << console::Color::eBlue << m_bg_color;
 	int x = std::max((screen_width - static_cast<int>(snake_logo[0].size())) / 2, 1);
 	int y = std::max((screen_height - static_cast<int>(snake_logo.size())) / 2, 1);
 	draw_picture(snake_logo, y, x);
@@ -70,18 +79,31 @@ void CLIView::draw_greeting_screen()
 	std::cout.flush();
 }
 
-void CLIView::draw_empty_screen()
-{
-	std::cout << console::Color::eDefault << console::cls << console::home;
-}
-
-void CLIView::draw_screen_frame()
+void CLIView::draw_game_screen()
 {
 	draw_filled_rect(1, screen_height, 1, screen_width,
 		{' ', console::BackgroundColor::eCyan});
 	draw_empty_rect(1, screen_height, 1, screen_width,
 		{' ', console::BackgroundColor::eBlue});
 }
+
+void CLIView::draw_snake(const Snake& snake)
+{
+	for (auto& segment : snake.segments())
+		std::cout << console::Color::eBlue << m_bg_color
+			<< console::setpos(2 + segment.y, 2 + segment.x) << '@';
+	std::cout.flush();
+}
+
+void CLIView::draw_rabbit(const Rabbit& rabit)
+{
+	std::cout << console::Color::eRed << m_bg_color
+		<< console::setpos(2 + rabit.coord().y, 2 + rabit.coord().x) << 'O';
+	std::cout.flush();
+}
+
+MapExtent CLIView::min_map_size() { return {screen_width - 2, screen_height - 2}; }
+MapExtent CLIView::max_map_size() { return min_map_size(); }
 
 void CLIView::draw_horizontal_line(int y, console::ColoredChar c)
 	{ draw_horizontal_line(y, c, 1, screen_width); }

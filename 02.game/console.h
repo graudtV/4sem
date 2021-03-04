@@ -44,10 +44,17 @@ inline std::ostream& operator <<(std::ostream& os, ColoredChar c) { return os <<
  * Note. top left corner is (1, 1) */
 struct setpos {
 public:
-	setpos(int y_, int x_) : y(y_), x(x_) {}
+	explicit setpos(int y_, int x_) : y(y_), x(x_) {}
 	friend std::ostream& operator <<(std::ostream& os, setpos pos) { return os << "\e[" << pos.y << ";" << pos.x << "H"; }
 
 	int y, x;
+};
+
+struct show_cursor {
+public:
+	explicit show_cursor(bool show_) : show(show_) {}
+	friend std::ostream& operator <<(std::ostream& os, show_cursor cursor) { return os << ((cursor.show) ? "\e[?25h" : "\e[?25l"); }
+	bool show;
 };
 
 inline constexpr auto cls = "\e[2J"; // effect is equal to setpos(1, 1)

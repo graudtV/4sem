@@ -7,6 +7,11 @@ namespace game {
 
 class View;
 
+struct MapExtent {
+	int width;
+	int height;
+};
+
 class GameStage {
 public:
 	GameStage(View *view) : m_view(view) {}

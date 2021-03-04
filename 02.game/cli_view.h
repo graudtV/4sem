@@ -14,20 +14,25 @@ public:
 
 	void draw_empty_screen() override;
 	void draw_greeting_screen() override;
-	void draw_snake(const Snake& snakes) override {}
-	void draw_rabbit(const Rabbit& rabits) override {}
+	void draw_game_screen() override;
+	void draw_snake(const Snake& snake) override;
+	void draw_rabbit(const Rabbit& rabit) override;
 
 	bool next_stage_clicked() override { getchar(); return true; }
+
+	MapExtent min_map_size() override;
+	MapExtent max_map_size() override;
 	
 	bool should_close() const override { return screen_should_close; }
 
 	static void fetch_screen_size();
 private:
+	console::BackgroundColor m_bg_color = console::BackgroundColor::eCyan;
 	static int screen_width;
 	static int screen_height;
 	static bool screen_should_close;
 
-	void draw_screen_frame();
+	void adjust_to_map_size_impl(MapExtent map_size) override {}
 
 	void draw_horizontal_line(int y, console::ColoredChar c);
 	void draw_horizontal_line(int y, console::ColoredChar c, int x_from, int x_to);
