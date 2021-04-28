@@ -1,14 +1,14 @@
 SOURCES=\
- main.cpp\
- view.cpp\
- cli_view.cpp\
- game.cpp\
- snake_game.cpp\
- console.cpp
+ main.cpp
+#  view.cpp\
+#  cli_view.cpp\
+#  game.cpp\
+#  snake_game.cpp\
+#  console.cpp
 
 EXTRA_FLAGS=-std=c++17
 
-.PHONY: all depend clean
+.PHONY: all snake run depend clean
 
 all:
 	make depend && make snake
@@ -26,6 +26,6 @@ depend:
 	$(CXX) $(EXTRA_FLAGS) $(SOURCES) -MM > .depend
 
 clean:
-	rm -f snake
+	rm -f snake .depend
 
 include .depend
